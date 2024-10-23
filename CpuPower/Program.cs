@@ -19,7 +19,7 @@ static void RootCommandHandler(
     var table = new float?[loop];
 
     var visitor = new UpdateVisitor();
-    var computer = new Computer()
+    var computer = new Computer
     {
         IsCpuEnabled = true
     };
