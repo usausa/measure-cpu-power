@@ -26,14 +26,22 @@ static void RootCommandHandler(
     computer.Open();
     computer.Accept(visitor);
 
+    var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(x => x.HardwareType == HardwareType.Cpu);
+    if (cpu is null)
+    {
+        // TODO
+        return;
+    }
+
+    Console.WriteLine(cpu.Name);
+
     for (var i = 0; i < loop; i++)
     {
         Thread.Sleep(interval);
 
         computer.Accept(visitor);
-        var sensor = computer.Hardware
-            .SelectMany(EnumerableSensors)
-            .Where(x => (x.Hardware.HardwareType == HardwareType.Cpu) && (x.SensorType == SensorType.Power))
+        var sensor = EnumerableSensors(cpu)
+            .Where(x => x.SensorType == SensorType.Power)
             .FirstOrDefault(x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
         table[i] = sensor?.Value;
 
@@ -41,8 +49,19 @@ static void RootCommandHandler(
     }
 
     // TODO
+    Console.WriteLine($"Avg: {table.Average():F2}");
     Console.WriteLine($"Min: {table.Min():F2}");
     Console.WriteLine($"Max: {table.Max():F2}");
+}
+
+static IEnumerable<IHardware> EnumerableHardware(IHardware hardware)
+{
+    yield return hardware;
+
+    foreach (var subHardware in hardware.SubHardware)
+    {
+        yield return subHardware;
+    }
 }
 
 static IEnumerable<ISensor> EnumerableSensors(IHardware hardware)
