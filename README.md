@@ -1,4 +1,4 @@
-# measure-cpu-power
+# Measure CPU power tool
 
 Measure cpu package power consumption.
 
