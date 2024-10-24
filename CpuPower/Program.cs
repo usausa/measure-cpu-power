@@ -49,9 +49,9 @@ static void RootCommandHandler(
     }
 
     // TODO
-    Console.WriteLine($"Avg: {table.Average():F2}");
     Console.WriteLine($"Min: {table.Min():F2}");
     Console.WriteLine($"Max: {table.Max():F2}");
+    Console.WriteLine($"Avg: {table.Average():F2}");
 }
 
 static IEnumerable<IHardware> EnumerableHardware(IHardware hardware)
