@@ -6,15 +6,17 @@ using CpuPower;
 using LibreHardwareMonitor.Hardware;
 
 var rootCommand = new RootCommand("CPU power measurement tool");
-rootCommand.AddOption(new Option<int>(["--loop", "-l"], () => 10, "Loop"));
-rootCommand.AddOption(new Option<int>(["--interval", "-i"], () => 1000, "Loop"));
+rootCommand.AddOption(new Option<int>(["--loop", "-l"], () => 10, "Loop count"));
+rootCommand.AddOption(new Option<int>(["--interval", "-i"], () => 1000, "Interval ms"));
+rootCommand.AddOption(new Option<bool>(["--progress", "-p"], "Show progress"));
 rootCommand.Handler = CommandHandler.Create(RootCommandHandler);
 
 return await rootCommand.InvokeAsync(args).ConfigureAwait(false);
 
 static void RootCommandHandler(
     int loop,
-    int interval)
+    int interval,
+    bool progress)
 {
     var table = new float?[loop];
 
@@ -29,7 +31,6 @@ static void RootCommandHandler(
     var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(x => x.HardwareType == HardwareType.Cpu);
     if (cpu is null)
     {
-        // TODO
         return;
     }
 
@@ -45,10 +46,12 @@ static void RootCommandHandler(
             .FirstOrDefault(x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
         table[i] = sensor?.Value;
 
-        // TODO current
+        if (progress)
+        {
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss}: {table[i]:F2}");
+        }
     }
 
-    // TODO
     Console.WriteLine($"Min: {table.Min():F2}");
     Console.WriteLine($"Max: {table.Max():F2}");
     Console.WriteLine($"Avg: {table.Average():F2}");
