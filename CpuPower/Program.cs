@@ -28,7 +28,7 @@ static void RootCommandHandler(
     computer.Open();
     computer.Accept(visitor);
 
-    var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(x => x.HardwareType == HardwareType.Cpu);
+    var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(static x => x.HardwareType == HardwareType.Cpu);
     if (cpu is null)
     {
         return;
@@ -42,8 +42,8 @@ static void RootCommandHandler(
 
         computer.Accept(visitor);
         var sensor = EnumerableSensors(cpu)
-            .Where(x => x.SensorType == SensorType.Power)
-            .FirstOrDefault(x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
+            .Where(static x => x.SensorType == SensorType.Power)
+            .FirstOrDefault(static x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
         table[i] = sensor?.Value;
 
         if (progress)
