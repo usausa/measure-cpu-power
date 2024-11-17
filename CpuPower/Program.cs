@@ -1,3 +1,4 @@
+#pragma warning disable IDE0320
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 
