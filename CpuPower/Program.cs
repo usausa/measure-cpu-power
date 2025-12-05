@@ -12,7 +12,7 @@ rootCommand.AddOption(new Option<int>(["--interval", "-i"], () => 1000, "Interva
 rootCommand.AddOption(new Option<bool>(["--progress", "-p"], "Show progress"));
 rootCommand.Handler = CommandHandler.Create(RootCommandHandler);
 
-return await rootCommand.InvokeAsync(args).ConfigureAwait(false);
+rootCommand.Invoke(args);
 
 static void RootCommandHandler(
     int loop,
