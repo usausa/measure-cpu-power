@@ -20,7 +20,7 @@
     <Authors>machi_pon</Authors>
     <Copyright>Copyright (c) 2024 machi_pon</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/usausa/measure-cpu-power.git</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/usausa/measure-cpu-power</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
