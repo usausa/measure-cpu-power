@@ -32,35 +32,49 @@ public sealed class RootCommandHandler : ICommandHandler
             IsCpuEnabled = true
         };
         computer.Open();
-        computer.Accept(visitor);
-
-        var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(static x => x.HardwareType == HardwareType.Cpu);
-        if (cpu is null)
+        try
         {
-            return;
-        }
-
-        Console.WriteLine(cpu.Name);
-
-        for (var i = 0; i < Loop; i++)
-        {
-            await Task.Delay(Interval);
-
             computer.Accept(visitor);
-            var sensor = EnumerableSensors(cpu)
-                .Where(static x => x.SensorType == SensorType.Power)
-                .FirstOrDefault(static x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
-            table[i] = sensor?.Value;
 
-            if (Progress)
+            var cpu = computer.Hardware.SelectMany(EnumerableHardware).FirstOrDefault(static x => x.HardwareType == HardwareType.Cpu);
+            if (cpu is null)
             {
-                Console.WriteLine($"{DateTime.Now:HH:mm:ss}: {table[i]:F2}");
+                Console.WriteLine("CPU hardware not found.");
+                return;
             }
-        }
 
-        Console.WriteLine($"Min: {table.Min():F2}");
-        Console.WriteLine($"Max: {table.Max():F2}");
-        Console.WriteLine($"Avg: {table.Average():F2}");
+            Console.WriteLine(cpu.Name);
+
+            for (var i = 0; i < Loop; i++)
+            {
+                await Task.Delay(Interval);
+
+                computer.Accept(visitor);
+                var sensor = EnumerableSensors(cpu)
+                    .Where(static x => x.SensorType == SensorType.Power)
+                    .FirstOrDefault(static x => x.Name.Contains("Package", StringComparison.OrdinalIgnoreCase));
+                table[i] = sensor?.Value;
+
+                if (Progress)
+                {
+                    Console.WriteLine($"{DateTime.Now:HH:mm:ss}: {table[i]:F2}");
+                }
+            }
+
+            if (Array.TrueForAll(table, static x => x is null))
+            {
+                Console.WriteLine("Package power sensor not found.");
+                return;
+            }
+
+            Console.WriteLine($"Min: {table.Min():F2}");
+            Console.WriteLine($"Max: {table.Max():F2}");
+            Console.WriteLine($"Avg: {table.Average():F2}");
+        }
+        finally
+        {
+            computer.Close();
+        }
     }
 
     private static IEnumerable<IHardware> EnumerableHardware(IHardware hardware)
